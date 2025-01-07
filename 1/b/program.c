@@ -3,10 +3,15 @@
 #include<mpi.h>
 
 #define SEED 1234
-#define NUM_ITERATIONS 1000000
 
 #define ROOT 0
 int main(int argc, char *argv[]){
+	if (argc != 2) {
+		printf("Error. Usage: %s num_iterations\n", argv[0]);
+		exit(1);
+	}
+	int numIterations = atoi(argv[1]);
+	
 	MPI_Init(&argc, &argv);
 	
 	int worldSize; // Number of workers
@@ -23,7 +28,7 @@ int main(int argc, char *argv[]){
 
 	srand(SEED + workerRank); // so that each worker gets a unique seed so they get different random numbers
 		
-	for (int i = 0; i < NUM_ITERATIONS / worldSize; i++) { // divide iterations equally among all workers
+	for (int i = 0; i < numIterations / worldSize; i++) { // divide iterations equally among all workers
 		double x = (double) rand() / RAND_MAX;
 		double y = (double) rand() / RAND_MAX;
 		
@@ -35,10 +40,10 @@ int main(int argc, char *argv[]){
 	MPI_Reduce (&circleHits, &totalCircleHits, 1, MPI_INT, MPI_SUM, ROOT, MPI_COMM_WORLD);
 	
 	if (workerRank == ROOT) {
-		double pi = (double) totalCircleHits / NUM_ITERATIONS * 4;
+		double pi = (double) totalCircleHits / numIterations * 4;
 		double endTime = MPI_Wtime();
 	
-		printf("Number of Iterations: %d\n", NUM_ITERATIONS);
+		printf("Number of Iterations: %d\n", numIterations);
 		printf("Number of Threads: %d\n", worldSize);
 		printf("PI: %f\n", pi);
 		printf("Time Taken: %f\n", endTime - startTime);

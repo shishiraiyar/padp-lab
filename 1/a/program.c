@@ -31,6 +31,6 @@ int main(int argc, char *argv[]){
 	double pi = ((double)circleHits / numIterations) * 4;
 	
 	double endTime = omp_get_wtime();
-	printf("PI: %f\nTime Taken: %f", pi, endTime - startTime);
+	printf("PI: %f\nTime Taken: %f\n", pi, endTime - startTime);
 		 
 }	
