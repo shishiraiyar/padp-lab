@@ -37,7 +37,7 @@ int main(int argc, char *argv[]){
 
 	double startTime = omp_get_wtime();
 
-	#pragma omp parallel for schedule(static, 50)
+	#pragma omp parallel for schedule(static, 50) // change to dynamic and guided
 	for (int x = 0; x < w; x++) {
 		for (int y = 0; y < h; y++) {
 			int color = gdImageGetPixel(inImage, x, y);
