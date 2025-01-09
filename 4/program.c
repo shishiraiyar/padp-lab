@@ -19,8 +19,10 @@ int main(int argc, char *argv[]){
 	}
 
 	gdImagePtr inImage = gdImageCreateFromPng(inputFile);
-	if (!inImage)
+	if (!inImage) {
 		printf("Input file not png (or broken png)\n");
+		return 1;
+	}
 	int w = gdImageSX(inImage);
 	int h = gdImageSY(inImage);
 
