@@ -32,7 +32,9 @@ int main(int argc, char *argv[]){
 		printf("Couldn't create output image of the same dimensions\n");
 		return 1;
 	}
-	
+
+	omp_set_num_threads(4);
+
 	double startTime = omp_get_wtime();
 
 	#pragma omp parallel for collapse(2)
@@ -40,7 +42,17 @@ int main(int argc, char *argv[]){
 		for (int y = 0; y < h; y++) {
 			int color = gdImageGetPixel(inImage, x, y);
 			int avgColor = 0.33 * gdImageRed(inImage, color) + 0.33 * gdImageGreen(inImage, color) + 0.33 * gdImageBlue(inImage, color);
-			gdImageSetPixel(outImage, x, y, gdImageColorAllocate(outImage, avgColor, avgColor, avgColor));
+			int outputPixelColor;
+			int tid = omp_get_thread_num();
+	
+			switch(tid) {
+				case 0: outputPixelColor = gdImageColorAllocate(outImage, avgColor, 0, 0); break;
+				case 1: outputPixelColor = gdImageColorAllocate(outImage, 0, avgColor, 0); break;
+				case 2: outputPixelColor = gdImageColorAllocate(outImage, 0, 0, avgColor); break;
+				case 3: outputPixelColor = gdImageColorAllocate(outImage, avgColor, avgColor, avgColor);
+			}
+
+			gdImageSetPixel(outImage, x, y, outputPixelColor);
 	
 		}
 	}
