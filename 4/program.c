@@ -7,25 +7,27 @@
 int main(int argc, char *argv[]){
 	if (argc != 3) {
 		printf("Error. Usage: %s inputFilename.png outputFilename.png\n", argv[0]);
-	exit(1);
+		exit(1);
 	}
 
 	FILE *inputFile = fopen(argv[1], "rb");
 	FILE *outputFile = fopen(argv[2], "wb");
+
 	if (!inputFile || !outputFile) {
-		printf("FILE ISSUE\n");
+		printf("Error in opening files\n");
 		return 1;
 	}
+
 	gdImagePtr inImage = gdImageCreateFromPng(inputFile);
 	if (!inImage)
-		printf("Input Image issue\n");
+		printf("Input file not png (or broken png)\n");
 	int w = gdImageSX(inImage);
 	int h = gdImageSY(inImage);
 
 	gdImagePtr outImage = gdImageCreateTrueColor(w, h);
 	
-	if (!inImage || !outImage){
-		printf("Image Issue\n");
+	if (!outImage){
+		printf("Couldn't create output image of the same dimensions\n");
 		return 1;
 	}
 	
