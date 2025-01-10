@@ -42,18 +42,23 @@ int main (int argc, char *argv[]) {
 
     while (error > tolerance && iterationCount < maxIterations) {
         error = 0;
-        
-        for (int i = 1; i<n - 1; i++) {
-            for (int j = 1; j<n - 1; j++) {
-                Anew[i*n + j] = 0.25 * (A[(i-1)*n + j] + A[(i+1)*n + j] + 
-                                        A[i*n + (j-1)] + A[i*n + (j+1)]);
-                error = fmax(error, fabs(Anew[i*n + j] - A[i*n + j]));
+
+        #pragma acc kernels 
+        {        
+            #pragma acc parallel loop tile(32, 4)
+            for (int i = 1; i<n - 1; i++) {
+                for (int j = 1; j<n - 1; j++) {
+                    Anew[i*n + j] = 0.25 * (A[(i-1)*n + j] + A[(i+1)*n + j] + 
+                                            A[i*n + (j-1)] + A[i*n + (j+1)]);
+                    error = fmax(error, fabs(Anew[i*n + j] - A[i*n + j]));
+                }
             }
-        }
-        
-        for (int i = 1; i<n - 1; i++) {
-            for (int j = 1; j<n - 1; j++) {
-                A[i*n + j] = Anew[i*n + j];
+            
+            #pragma acc parallel loop tile(32, 4)
+            for (int i = 1; i<n - 1; i++) {
+                for (int j = 1; j<n - 1; j++) {
+                    A[i*n + j] = Anew[i*n + j];
+                }
             }
         }
         // printMatrix(A, n);
@@ -63,3 +68,5 @@ int main (int argc, char *argv[]) {
 
     printf("Time taken: %f\n", endTime - startTime);
 }
+
+// pgcc -acc -fast -Minfo=accel program.c -lm
