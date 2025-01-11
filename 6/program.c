@@ -5,7 +5,7 @@
 
 #include<omp.h>
 
-char *toLower(char *str) {
+void toLower(char *str) {
 	for (int i=0; str[i] != 0; i++) {
 		str[i] = tolower(str[i]);
 	}
